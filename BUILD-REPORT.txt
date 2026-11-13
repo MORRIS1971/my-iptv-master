@@ -1,6 +1,6 @@
-MY IPTV MASTER — BUILD REPORT v2
+MY IPTV MASTER — BUILD REPORT v3.1 HYBRID
 
-RINGKASAN KATEGORI (selepas deduplikasi berdasarkan tvg-id atau nama saluran):
+RINGKASAN KATEGORI M3U:
 01 TV MALAYSIA: 6 saluran
 02 LEARNING CHANNELS: 210 saluran
 03 DISCOVERY CHANNELS: 272 saluran
@@ -8,10 +8,21 @@ RINGKASAN KATEGORI (selepas deduplikasi berdasarkan tvg-id atau nama saluran):
 05 SPORTS: 538 saluran
 06 MOVIES: 824 saluran
 
-Jumlah saluran selepas deduplikasi: 3008
-Entri pendua yang ditolak: 36
+Jumlah saluran M3U: 3008
+Entri pendua ditolak: 36
 
-SUMBER DAN JUMLAH TAMBAHAN:
+SENARAI TV MALAYSIA DALAM M3U:
+- Berita RTM (1080p)
+#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=BeritaRTM.my@SD
+- BTL TV (Netherlands) (1080p) | tvg-id=BTLTV.nl@SD
+- FTV (Taiwan) (720p) [Not 24/7] | tvg-id=FTV.tw@SD
+- Okey (1080p)
+#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=Okey.my@SD
+- TV1 (Malaysia) (1080p) | tvg-id=TV1.my@SD
+- TV2 (Malaysia) (1080p)
+#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=TV2.my@SD
+
+SUMBER DAN JUMLAH:
 IPTV-ORG Malaysia: 6
 IPTV-ORG Education: 208
 IPTV-ORG Documentary: 246
@@ -25,7 +36,12 @@ Free-TV Movies: 51
 Free-TV Learning: 2
 Free-TV Discovery: 10
 
-URL SUMBER:
+PLATFORM RASMI MALAYSIA (PAUTAN WEB/APLIKASI, BUKAN M3U):
+- RTMKlik: https://rtmklik.rtm.gov.my/
+- Tonton: https://www.tonton.com.my/
+- Awesome TV: https://awesometv.my/
+
+SUMBER M3U:
 - malaysia: https://iptv-org.github.io/iptv/countries/my.m3u
 - education: https://iptv-org.github.io/iptv/categories/education.m3u
 - documentary: https://iptv-org.github.io/iptv/categories/documentary.m3u
@@ -36,10 +52,10 @@ URL SUMBER:
 - free_tv: https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8
 
 NOTA:
-- Deduplikasi v2 mengutamakan tvg-id; jika tiada, nama saluran dinormalisasi.
-- Nama sama mungkin merujuk kepada saluran berlainan di sesetengah negara; semak secara manual jika perlu.
-- Builder menggabungkan playlist awam dan tidak menjamin semua stream boleh dimainkan dari Malaysia.
-- Tiada ujian kebolehcapaian stream, DRM, login atau sekatan geografi dilakukan.
-- Saluran sukan tidak menjamin akses kepada EPL atau badminton premium secara langsung.
-- Logo dan tvg-id dikekalkan jika disediakan oleh sumber.
-- EPG belum digabungkan; perlu sumber XMLTV dan pemadanan tvg-id yang sesuai.
+- V3.1 ialah sistem Hybrid: satu playlist M3U ditambah panduan platform rasmi Malaysia.
+- Pautan RTMKlik, Tonton dan Awesome TV bukan stream M3U dan tidak dipaparkan sebagai saluran boleh main dalam OTT Navigator.
+- Stream M3U bersumberkan playlist awam; kebolehcapaian dari Malaysia belum dijamin.
+- Tiada ujian playback, DRM, login atau geo-block dibuat.
+- Saluran sukan tidak menjamin akses EPL atau badminton premium.
+- Metadata tvg-id/tvg-logo dikekalkan jika tersedia.
+- EPG XMLTV belum disepadukan.
