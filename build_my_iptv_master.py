@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# MY IPTV MASTER PLAYLIST BUILDER v3.2 — HYBRID MALAYSIA
+# MY IPTV MASTER PLAYLIST BUILDER v3.3 — HYBRID MALAYSIA
 # Public/authorized M3U sources only. Official platform links remain separate.
 
 from urllib.request import Request, urlopen
@@ -8,7 +8,7 @@ from pathlib import Path
 from collections import Counter
 import re
 
-VERSION = "3.2"
+VERSION = "3.3"
 SOURCES = {
     "malaysia": "https://iptv-org.github.io/iptv/countries/my.m3u",
     "education": "https://iptv-org.github.io/iptv/categories/education.m3u",
@@ -50,7 +50,7 @@ GROUPS = [
     "02 LEARNING CHANNELS",
     "03 DISCOVERY CHANNELS",
     "04 NEWS",
-    "05 LIVE & GENERAL",
+    "05 OTHER / UNCLASSIFIED",
     "06 SPORTS",
     "07 MOVIES",
 ]
@@ -109,7 +109,6 @@ def dedupe_key(extinf, stream_url):
     tvg_id = get_attr(extinf, "tvg-id").lower()
     if tvg_id:
         return ("id", tvg_id)
-    # Without a stable channel ID, require the same title AND exact stream URL.
     title = normalize(get_title(extinf))
     return ("title-url", title, stream_url.strip().lower())
 
@@ -121,7 +120,7 @@ def valid_stream_url(stream_url):
         host = parsed.hostname.lower()
         if host in {"localhost", "127.0.0.1", "::1"}:
             return False
-        if host.endswith(".example.com") or host == "example.com":
+        if host == "example.com" or host.endswith(".example.com"):
             return False
         return True
     except ValueError:
@@ -167,7 +166,7 @@ def build_hybrid_guide():
         "- OTT Navigator membaca stream M3U; ia tidak menukar pautan laman web atau aplikasi menjadi stream.",
         "- Ketersediaan kandungan, akaun, langganan dan sekatan lokasi ditentukan oleh penyiar.",
         "- Tiada URL dalaman aplikasi, DRM atau sekatan lokasi yang dipintas.",
-        "- Kategori LIVE & GENERAL menempatkan entri Free-TV yang tidak dikenal pasti dalam kategori khusus.",
+        "- OTHER / UNCLASSIFIED mengandungi entri Free-TV yang tidak sepadan dengan peraturan kategori khusus; ia bukan pengesahan jenis kandungan atau status siaran langsung.",
         "- Ketersediaan dan playback setiap stream perlu diuji dalam aplikasi.",
         "- EPG XMLTV belum disepadukan.",
     ])
@@ -186,7 +185,24 @@ def run_self_tests():
     assert valid_stream_url("https://cdn.example.org/live.m3u8")
     assert not valid_stream_url("file:///tmp/channel.m3u8")
     assert not valid_stream_url("http://localhost/channel")
-    print("Self-test: PASS (country filter, group assignment, URL validation)")
+
+    test_records = [
+        ('#EXTINF:-1,World News', 'https://one.example/news.m3u8'),
+        ('#EXTINF:-1,Football Live', 'https://one.example/sport.m3u8'),
+        ('#EXTINF:-1,Unknown Channel', 'https://one.example/other.m3u8'),
+    ]
+    patterns = [
+        re.compile(r'\b(news|world news|international news|24h news|24 hour news)\b', re.I),
+        re.compile(r'\b(sport|sports|football|soccer|tennis|badminton|basketball|cricket|motorsport)\b', re.I),
+    ]
+    assigned = set()
+    for index, (extinf, _) in enumerate(test_records):
+        title = get_title(extinf)
+        if any(pattern.search(title) for pattern in patterns):
+            assigned.add(index)
+    assert len(assigned) == 2
+    assert [r for i, r in enumerate(test_records) if i not in assigned] == [test_records[2]]
+    print("Self-test: PASS (Malaysia filter, grouping, URL validation, unclassified routing)")
 
 def main():
     run_self_tests()
@@ -230,9 +246,8 @@ def main():
                 malaysia_titles.append((get_title(extinf), get_attr(extinf, "tvg-id"), get_attr(extinf, "tvg-country")))
         return added
 
-    malaysia_records = downloaded["malaysia"]
     verified_malaysia = []
-    for extinf, stream_url in malaysia_records:
+    for extinf, stream_url in downloaded["malaysia"]:
         if is_malaysian_channel(extinf):
             verified_malaysia.append((extinf, stream_url))
         else:
@@ -248,6 +263,8 @@ def main():
     add_records(downloaded["sports"], GROUPS[5], "IPTV-ORG Sports")
     add_records(downloaded["movies"], GROUPS[6], "IPTV-ORG Movies")
 
+    # Assign each Free-TV source record to at most one content category.
+    # Anything not confidently matched is retained under OTHER / UNCLASSIFIED.
     free_tv_rules = [
         (GROUPS[3], re.compile(r'\b(news|world news|international news|24h news|24 hour news)\b', re.I), "Free-TV News"),
         (GROUPS[5], re.compile(r'\b(sport|sports|football|soccer|tennis|badminton|basketball|cricket|motorsport)\b', re.I), "Free-TV Sports"),
@@ -259,15 +276,21 @@ def main():
     for group, pattern, source_label in free_tv_rules:
         matches = []
         for index, record in enumerate(free_tv_records):
+            if index in free_tv_assigned:
+                continue
             extinf, _ = record
-            if index not in free_tv_assigned and pattern.search(get_title(extinf) + " " + get_attr(extinf, "group-title")):
+            if pattern.search(get_title(extinf) + " " + get_attr(extinf, "group-title")):
                 matches.append(record)
                 free_tv_assigned.add(index)
         add_records(matches, group, source_label)
 
-    # Keep remaining Free-TV entries available, but label them honestly as general live channels.
-    remaining = [record for index, record in enumerate(free_tv_records) if index not in free_tv_assigned]
-    add_records(remaining, GROUPS[4], "Free-TV General/Unclassified")
+    unclassified_records = [
+        record for index, record in enumerate(free_tv_records)
+        if index not in free_tv_assigned
+    ]
+    unclassified_added = add_records(
+        unclassified_records, GROUPS[4], "Free-TV Other/Unclassified"
+    )
 
     with OUTFILE.open("w", encoding="utf-8", newline="\n") as playlist:
         playlist.write("#EXTM3U\n")
@@ -289,6 +312,8 @@ def main():
         f"Entri pendua ditolak: {duplicates}",
         f"URL tidak sah/ditolak: {rejected_invalid}",
         f"Entri bukan Malaysia ditolak daripada kategori TV Malaysia: {len(rejected_non_malaysia)}",
+        f"Entri Free-TV tidak dapat diklasifikasikan (sebelum deduplikasi): {len(unclassified_records)}",
+        f"Entri OTHER / UNCLASSIFIED berjaya ditambah: {unclassified_added}",
         "",
         "SENARAI TV MALAYSIA YANG DISAHKAN:",
     ])
@@ -307,10 +332,11 @@ def main():
     report.extend([
         "",
         "NOTA:",
-        "- V3.2 mengasingkan NEWS daripada LIVE & GENERAL.",
+        "- V3.3 mengekalkan fungsi V3.2 dan menamakan semula LIVE & GENERAL kepada OTHER / UNCLASSIFIED.",
+        "- NEWS kekal kategori berasingan daripada OTHER / UNCLASSIFIED.",
         "- TV Malaysia ditapis menggunakan tvg-country (MY/MYS/Malaysia) atau tvg-id berakhiran .my.",
-        "- Rekod yang tidak mempunyai bukti negara Malaysia tidak dimasukkan ke kategori TV Malaysia.",
-        "- Free-TV yang tidak sepadan dengan kategori khusus diletakkan dalam LIVE & GENERAL.",
+        "- Rekod Free-TV yang tidak sepadan dengan peraturan kategori khusus diletakkan dalam OTHER / UNCLASSIFIED.",
+        "- OTHER / UNCLASSIFIED bukan pengesahan jenis kandungan atau status siaran langsung.",
         "- Pendua tanpa tvg-id hanya ditolak jika nama dan URL stream sama.",
         "- Stream awam tidak semestinya boleh dimainkan dari Malaysia; playback belum diuji.",
         "- Tiada URL dalaman aplikasi, DRM atau sekatan lokasi yang dipintas.",
