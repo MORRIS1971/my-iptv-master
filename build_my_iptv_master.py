@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-# MY IPTV MASTER PLAYLIST BUILDER v3 — HYBRID MALAYSIA
-# M3U streams remain limited to public/authorized sources.
-# Official broadcaster apps/websites are listed separately; they are not converted
-# into stream URLs and are not falsely represented as playable M3U entries.
+# MY IPTV MASTER PLAYLIST BUILDER v3.1 — HYBRID MALAYSIA
+# M3U contains only public/authorized stream URLs.
+# Official broadcaster platforms are documented separately, never faked as M3U streams.
 
 from urllib.request import Request, urlopen
 from pathlib import Path
-import re
 from collections import Counter
+import re
 
 SOURCES = {
     "malaysia": "https://iptv-org.github.io/iptv/countries/my.m3u",
@@ -24,29 +23,26 @@ OFFICIAL_MALAYSIA = [
     {
         "name": "RTMKlik",
         "channels": "TV1, TV2, TV Okey, Berita RTM, Sukan TV, TV6 dan Parlimen RTM",
-        "url": "https://rtmklik.rtm.gov.my/",
-        "app": "https://play.google.com/store/apps/details?id=my.gov.rtm.mobile",
-        "note": "Platform rasmi RTM. Gunakan aplikasi atau laman web RTMKlik; tiada URL M3U rasmi terbuka disahkan dalam builder ini."
+        "website": "https://rtmklik.rtm.gov.my/",
+        "android": "https://play.google.com/store/apps/details?id=my.gov.rtm.mobile",
+        "android_tv": "https://play.google.com/store/apps/details?id=my.gov.rtm.tv",
+        "note": "Gunakan aplikasi atau laman web rasmi. Builder ini tidak mempunyai URL M3U terbuka RTM yang disahkan."
     },
     {
         "name": "Tonton",
         "channels": "TV3, TV9, 8TV, DidikTV dan kandungan Media Prima",
-        "url": "https://www.tonton.com.my/",
+        "website": "https://www.tonton.com.my/",
         "live": "https://browse.tonton.com.my/live",
-        "note": "Platform rasmi Media Prima. Sesetengah tontonan langsung mungkin memerlukan aplikasi Tonton atau akaun."
+        "note": "Sesetengah siaran mungkin memerlukan aplikasi, akaun atau langganan Tonton."
     },
     {
         "name": "Awesome TV",
-        "channels": "Awesome TV Live",
-        "url": "https://awesometv.my/",
-        "live": "https://awesometv.my/livetv",
-        "note": "Laman rasmi menyediakan halaman Live TV. Pautan ini dibuka sebagai laman web, bukan stream M3U."
+        "channels": "Awesome TV",
+        "website": "https://awesometv.my/",
+        "live": "https://awesometv.my/livetv/details/awesome-tv/28",
+        "note": "Gunakan halaman Live rasmi. Pautan laman web bukan URL M3U."
     },
 ]
-
-OUTFILE = Path(__file__).with_name("MY-IPTV-MASTER.m3u")
-REPORT = Path(__file__).with_name("BUILD-REPORT.txt")
-HYBRID_GUIDE = Path(__file__).with_name("MALAYSIA-OFFICIAL-STREAMING.md")
 
 GROUPS = [
     "01 TV MALAYSIA",
@@ -57,15 +53,21 @@ GROUPS = [
     "06 MOVIES",
 ]
 
+BASE = Path(__file__).resolve().parent
+OUTFILE = BASE / "MY-IPTV-MASTER.m3u"
+REPORT = BASE / "BUILD-REPORT.txt"
+HYBRID_GUIDE = BASE / "MALAYSIA-OFFICIAL-STREAMING.md"
+
 def fetch(url):
-    req = Request(url, headers={"User-Agent": "MY-IPTV-MASTER/3.0"})
-    with urlopen(req, timeout=35) as response:
+    request = Request(url, headers={"User-Agent": "MY-IPTV-MASTER/3.1"})
+    with urlopen(request, timeout=40) as response:
         return response.read().decode("utf-8", "replace")
 
 def parse_m3u(text):
-    lines = [line.strip() for line in text.replace("\r", "").split("\n")]
-    records, pending = [], None
-    for line in lines:
+    records = []
+    pending = None
+    for raw in text.replace("\r", "").split("\n"):
+        line = raw.strip()
         if not line:
             continue
         if line.startswith("#EXTINF:"):
@@ -78,8 +80,8 @@ def parse_m3u(text):
             pending = None
     return records
 
-def get_attr(line, key):
-    match = re.search(r'\\b' + re.escape(key) + r'="([^"]*)"', line, re.I)
+def get_attr(extinf, key):
+    match = re.search(r'\b' + re.escape(key) + r'="([^"]*)"', extinf, re.I)
     return match.group(1).strip() if match else ""
 
 def get_title(extinf):
@@ -87,96 +89,101 @@ def get_title(extinf):
 
 def normalize(value):
     value = (value or "").lower()
-    value = re.sub(r'\\[[^]]*\\]|\\([^)]*\\)', ' ', value)
-    value = re.sub(r'\\b(hd|fhd|uhd|4k|sd|live|backup|alt)\\b', ' ', value)
-    value = re.sub(r'[^a-z0-9]+', ' ', value)
-    return re.sub(r'\\s+', ' ', value).strip()
+    value = re.sub(r'\[[^]]*\]|\([^)]*\)', " ", value)
+    value = re.sub(r'\b(hd|fhd|uhd|4k|sd|live|backup|alt)\b', " ", value)
+    value = re.sub(r'[^a-z0-9]+', " ", value)
+    return re.sub(r'\s+', " ", value).strip()
 
-def dedupe_key(extinf):
+def dedupe_key(extinf, stream_url):
     tvg_id = get_attr(extinf, "tvg-id").lower()
     if tvg_id:
         return ("id", tvg_id)
-    return ("title", normalize(get_title(extinf)))
+    title = normalize(get_title(extinf))
+    return ("title", title) if title else ("url", stream_url.lower())
 
 def set_group(extinf, group):
-    if re.search(r'\\bgroup-title="[^"]*"', extinf):
-        return re.sub(r'\\bgroup-title="[^"]*"', f'group-title="{group}"', extinf, count=1)
-    head, sep, title = extinf.partition(",")
-    return f'{head} group-title="{group}"{sep}{title}'
+    if re.search(r'\bgroup-title="[^"]*"', extinf):
+        return re.sub(r'\bgroup-title="[^"]*"', f'group-title="{group}"', extinf, count=1)
+    head, separator, title = extinf.partition(",")
+    return f'{head} group-title="{group}"{separator}{title}'
 
 def build_hybrid_guide():
     lines = [
-        "# MY IPTV MASTER V3 — Pautan Penstriman Rasmi Malaysia",
+        "# MY IPTV MASTER V3 — Platform Penstriman Rasmi Malaysia",
         "",
-        "Dokumen ini melengkapkan playlist M3U dengan pautan ke platform rasmi penyiar Malaysia.",
-        "Pautan di bawah ialah laman web/aplikasi rasmi, BUKAN URL M3U. Ia tidak akan muncul sebagai saluran boleh main dalam OTT Navigator.",
+        "Playlist M3U utama mengandungi stream awam/yang dibenarkan sahaja.",
+        "Pautan dalam panduan ini membuka laman atau aplikasi rasmi; ia BUKAN stream M3U dan tidak akan muncul sebagai saluran boleh main dalam OTT Navigator.",
         "",
-        "## Platform rasmi",
+        "## Platform rasmi Malaysia",
         "",
     ]
     for item in OFFICIAL_MALAYSIA:
         lines.extend([
             f"### {item['name']}",
             f"- Saluran/kandungan: {item['channels']}",
-            f"- Laman rasmi: {item['url']}",
+            f"- Laman rasmi: {item['website']}",
         ])
         if item.get("live"):
             lines.append(f"- Halaman Live: {item['live']}")
-        if item.get("app"):
-            lines.append(f"- Aplikasi Android: {item['app']}")
+        if item.get("android"):
+            lines.append(f"- Aplikasi Android: {item['android']}")
+        if item.get("android_tv"):
+            lines.append(f"- Aplikasi Android TV: {item['android_tv']}")
         lines.extend([f"- Nota: {item['note']}", ""])
     lines.extend([
-        "## Cara penggunaan",
-        "1. Gunakan MY-IPTV-MASTER.m3u sebagai playlist utama dalam OTT Navigator.",
-        "2. Untuk saluran yang tidak tersedia sebagai M3U, buka platform rasmi di atas menggunakan aplikasi atau browser yang disokong.",
-        "3. Jangan salin atau ekstrak URL dalaman aplikasi/laman web jika penyiar tidak menyediakan pautan M3U secara rasmi.",
+        "## Cara menggunakan sistem Hybrid",
+        "1. Tambah MY-IPTV-MASTER.m3u sebagai playlist utama dalam OTT Navigator.",
+        "2. Untuk saluran yang tiada stream M3U sah, buka laman/aplikasi rasmi melalui pautan dalam dokumen ini.",
+        "3. Pada telefon atau Android TV, pasang aplikasi rasmi yang berkaitan.",
+        "4. Pada laptop, gunakan laman web rasmi melalui browser jika penyiar menyokong tontonan web.",
         "",
         "## Batasan",
-        "- Ketersediaan kandungan, akaun dan sekatan lokasi ditentukan oleh setiap penyiar.",
-        "- Pautan rasmi boleh berubah; semak laman penyiar jika pautan tidak lagi berfungsi.",
-        "- Dokumen ini tidak menyediakan akses kepada saluran berbayar atau kandungan yang memerlukan langganan.",
+        "- OTT Navigator membaca stream M3U; ia tidak boleh menukar pautan laman web atau pautan aplikasi menjadi stream.",
+        "- Ketersediaan kandungan, akaun, langganan dan sekatan lokasi ditentukan oleh penyiar.",
+        "- Jangan ekstrak atau mengedar URL dalaman aplikasi yang tidak diterbitkan sebagai stream awam.",
+        "- Tiada akses kepada kandungan premium/DRM yang dipintas.",
     ])
     HYBRID_GUIDE.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 def main():
-    downloaded, failures = {}, []
-    for source_name, source_url in SOURCES.items():
+    downloaded = {}
+    failures = []
+    for name, url in SOURCES.items():
         try:
-            print(f"Downloading {source_name}...")
-            downloaded[source_name] = parse_m3u(fetch(source_url))
+            print(f"Downloading {name}...")
+            downloaded[name] = parse_m3u(fetch(url))
         except Exception as error:
-            downloaded[source_name] = []
-            failures.append(f"{source_name}: {type(error).__name__}: {error}")
+            downloaded[name] = []
+            failures.append(f"{name}: {type(error).__name__}: {error}")
 
-    output, seen = [], set()
-    counts, source_counts = Counter(), Counter()
+    output = []
+    seen = set()
+    counts = Counter()
+    source_counts = Counter()
     duplicates = 0
-    malaysia_entries = []
+    malaysia_titles = []
 
-    def add_records(records, group, source_name):
+    def add_records(records, group, source_label):
         nonlocal duplicates
         added = 0
         for extinf, stream_url in records:
             if not stream_url.startswith(("http://", "https://")):
                 continue
-            if any(bad in stream_url.lower() for bad in ("example.com", "localhost", "127.0.0.1")):
+            if any(token in stream_url.lower() for token in ("example.com", "localhost", "127.0.0.1")):
                 continue
-            key = dedupe_key(extinf)
-            if not key[1]:
-                key = ("url", stream_url.lower())
+            key = dedupe_key(extinf, stream_url)
             if key in seen:
                 duplicates += 1
                 continue
             seen.add(key)
             output.append((set_group(extinf, group), stream_url))
             counts[group] += 1
-            source_counts[source_name] += 1
+            source_counts[source_label] += 1
             added += 1
             if group == GROUPS[0]:
-                malaysia_entries.append((get_title(extinf), get_attr(extinf, "tvg-id"), stream_url))
+                malaysia_titles.append((get_title(extinf), get_attr(extinf, "tvg-id")))
         return added
 
-    # Six M3U categories: retain public playlist feeds and metadata.
     add_records(downloaded["malaysia"], GROUPS[0], "IPTV-ORG Malaysia")
     add_records(downloaded["education"], GROUPS[1], "IPTV-ORG Education")
     add_records(downloaded["documentary"], GROUPS[2], "IPTV-ORG Documentary")
@@ -185,33 +192,32 @@ def main():
     add_records(downloaded["sports"], GROUPS[4], "IPTV-ORG Sports")
     add_records(downloaded["movies"], GROUPS[5], "IPTV-ORG Movies")
 
-    # Free-TV supplements use specific topical terms; no broad "live" match.
-    rules = [
-        (GROUPS[3], re.compile(r'\\b(news|world news|international news|24h news|24 hour news)\\b', re.I), "Free-TV News"),
-        (GROUPS[4], re.compile(r'\\b(sport|sports|football|soccer|tennis|badminton|basketball|cricket|motorsport)\\b', re.I), "Free-TV Sports"),
-        (GROUPS[5], re.compile(r'\\b(movie|movies|cinema|film)\\b', re.I), "Free-TV Movies"),
-        (GROUPS[1], re.compile(r'\\b(education|educational|learning|knowledge|school)\\b', re.I), "Free-TV Learning"),
-        (GROUPS[2], re.compile(r'\\b(documentary|nature|wildlife|discovery|history|animal|science)\\b', re.I), "Free-TV Discovery"),
+    free_tv_rules = [
+        (GROUPS[3], re.compile(r'\b(news|world news|international news|24h news|24 hour news)\b', re.I), "Free-TV News"),
+        (GROUPS[4], re.compile(r'\b(sport|sports|football|soccer|tennis|badminton|basketball|cricket|motorsport)\b', re.I), "Free-TV Sports"),
+        (GROUPS[5], re.compile(r'\b(movie|movies|cinema|film)\b', re.I), "Free-TV Movies"),
+        (GROUPS[1], re.compile(r'\b(education|educational|learning|knowledge|school)\b', re.I), "Free-TV Learning"),
+        (GROUPS[2], re.compile(r'\b(documentary|nature|wildlife|discovery|history|animal|science)\b', re.I), "Free-TV Discovery"),
     ]
-    for group, pattern, source_label in rules:
-        selected = [
+    for group, pattern, source_label in free_tv_rules:
+        matches = [
             (extinf, stream_url)
             for extinf, stream_url in downloaded["free_tv"]
             if pattern.search(get_title(extinf) + " " + get_attr(extinf, "group-title"))
         ]
-        add_records(selected, group, source_label)
+        add_records(matches, group, source_label)
 
-    with OUTFILE.open("w", encoding="utf-8", newline="\n") as file:
-        file.write("#EXTM3U\n")
+    with OUTFILE.open("w", encoding="utf-8", newline="\n") as playlist:
+        playlist.write("#EXTM3U\n")
         for extinf, stream_url in output:
-            file.write(extinf + "\n" + stream_url + "\n")
+            playlist.write(extinf + "\n" + stream_url + "\n")
 
     build_hybrid_guide()
 
     report = [
-        "MY IPTV MASTER — BUILD REPORT v3 HYBRID",
+        "MY IPTV MASTER — BUILD REPORT v3.1 HYBRID",
         "",
-        "RINGKASAN KATEGORI M3U (selepas deduplikasi):",
+        "RINGKASAN KATEGORI M3U:",
     ]
     for group in GROUPS:
         report.append(f"{group}: {counts[group]} saluran")
@@ -220,36 +226,31 @@ def main():
         f"Jumlah saluran M3U: {len(output)}",
         f"Entri pendua ditolak: {duplicates}",
         "",
-        "TV MALAYSIA — SENARAI UNTUK AUDIT:",
+        "SENARAI TV MALAYSIA DALAM M3U:",
     ])
-    if malaysia_entries:
-        for title, tvg_id, _ in malaysia_entries:
-            report.append(f"- {title} | tvg-id={tvg_id or 'tiada'}")
-    else:
-        report.append("- Tiada entri Malaysia berjaya dimuat turun.")
+    report.extend([f"- {name} | tvg-id={tvg_id or 'tiada'}" for name, tvg_id in malaysia_titles] or ["- Tiada entri Malaysia dalam sumber M3U."])
+    report.extend(["", "SUMBER DAN JUMLAH:"])
+    report.extend([f"{label}: {number}" for label, number in source_counts.items()])
     report.extend([
         "",
-        "SUMBER M3U DAN JUMLAH:",
+        "PLATFORM RASMI MALAYSIA (PAUTAN WEB/APLIKASI, BUKAN M3U):",
     ])
-    for label, number in source_counts.items():
-        report.append(f"{label}: {number}")
+    report.extend([f"- {item['name']}: {item['website']}" for item in OFFICIAL_MALAYSIA])
     report.extend([
         "",
-        "PLATFORM RASMI MALAYSIA (pautan aplikasi/web, bukan stream M3U):",
-        *[f"- {item['name']}: {item['url']}" for item in OFFICIAL_MALAYSIA],
-        "",
-        "URL SUMBER M3U:",
-        *[f"- {name}: {url}" for name, url in SOURCES.items()],
+        "SUMBER M3U:",
+    ])
+    report.extend([f"- {name}: {url}" for name, url in SOURCES.items()])
+    report.extend([
         "",
         "NOTA:",
-        "- V3 Hybrid mengekalkan satu playlist M3U dan menghasilkan panduan pautan rasmi Malaysia secara berasingan.",
-        "- Pautan RTMKlik, Tonton dan Awesome TV ialah laman/aplikasi rasmi; tidak disamarkan sebagai saluran M3U.",
-        "- M3U menggabungkan sumber awam; tidak menjamin semua stream boleh dimainkan dari Malaysia.",
-        "- Tiada ujian playback, DRM, login atau sekatan geografi dilakukan.",
-        "- Saluran sukan tidak menjamin akses kepada EPL atau badminton premium.",
-        "- tvg-id dan tvg-logo dikekalkan jika tersedia daripada sumber.",
-        "- EPG belum digabungkan; perlu sumber XMLTV yang sah dan padanan tvg-id.",
-        "- TV Malaysia masih bergantung pada feed M3U awam IPTV-ORG; panduan rasmi melengkapkan saluran yang tiada dalam M3U.",
+        "- V3.1 ialah sistem Hybrid: satu playlist M3U ditambah panduan platform rasmi Malaysia.",
+        "- Pautan RTMKlik, Tonton dan Awesome TV bukan stream M3U dan tidak dipaparkan sebagai saluran boleh main dalam OTT Navigator.",
+        "- Stream M3U bersumberkan playlist awam; kebolehcapaian dari Malaysia belum dijamin.",
+        "- Tiada ujian playback, DRM, login atau geo-block dibuat.",
+        "- Saluran sukan tidak menjamin akses EPL atau badminton premium.",
+        "- Metadata tvg-id/tvg-logo dikekalkan jika tersedia.",
+        "- EPG XMLTV belum disepadukan.",
     ])
     if failures:
         report.extend(["", "SUMBER GAGAL DIMUAT TURUN:"] + failures)
