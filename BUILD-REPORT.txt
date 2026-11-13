@@ -1,0 +1,30 @@
+01 TV MALAYSIA: 6 saluran unik
+02 LEARNING CHANNELS: 208 saluran unik
+03 DISCOVERY CHANNELS: 246 saluran unik
+03 DISCOVERY CHANNELS: 16 saluran unik
+04 LIVE CHANNELS: 1058 saluran unik
+05 SPORTS: 507 saluran unik
+06 MOVIES: 773 saluran unik
+04 LIVE CHANNELS: 138 saluran unik
+05 SPORTS: 34 saluran unik
+06 MOVIES: 50 saluran unik
+02 LEARNING CHANNELS: 2 saluran unik
+03 DISCOVERY CHANNELS: 10 saluran unik
+
+Jumlah keseluruhan: 3048 saluran unik
+Sumber:
+- malaysia: https://iptv-org.github.io/iptv/countries/my.m3u
+- education: https://iptv-org.github.io/iptv/categories/education.m3u
+- documentary: https://iptv-org.github.io/iptv/categories/documentary.m3u
+- science: https://iptv-org.github.io/iptv/categories/science.m3u
+- movies: https://iptv-org.github.io/iptv/categories/movies.m3u
+- sports: https://iptv-org.github.io/iptv/categories/sports.m3u
+- news: https://iptv-org.github.io/iptv/categories/news.m3u
+- free_tv: https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8
+
+PENTING:
+- Builder ini menggabungkan senarai awam; ia tidak menjamin setiap stream boleh dimainkan dari Malaysia.
+- Tiada ujian HTTP/geo-block dibuat secara automatik kerana sesetengah server menolak HEAD/automated checks.
+- Saluran sukan tidak menjamin akses kepada siaran EPL atau badminton premium secara langsung.
+- Playlist tidak membuka DRM, akaun berbayar atau sekatan geografi.
+- EPG tidak ditambah secara automatik; tvg-id/logo asal dikekalkan jika disediakan oleh sumber.
