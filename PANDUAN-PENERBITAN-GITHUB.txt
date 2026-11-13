@@ -1,0 +1,70 @@
+MY IPTV MASTER — GITHUB PUBLISHING PACK
+========================================
+
+TUJUAN
+Menerbitkan playlist M3U melalui GitHub supaya OTT Navigator boleh membaca
+satu URL HTTPS. GitHub Actions akan membina semula playlist setiap hari.
+
+LANGKAH A — CIPTA REPOSITORY
+1. Log masuk ke GitHub.
+2. Tekan New repository.
+3. Nama dicadangkan: my-iptv-master
+4. Pilih Public jika mahu URL Raw boleh dibaca terus tanpa login.
+   Jangan masukkan pautan peribadi, akaun, token atau sumber berbayar.
+5. Tekan Create repository.
+
+LANGKAH B — MUAT NAIK FAIL
+Muat naik fail/folder daripada pakej ini ke root repository:
+- build_my_iptv_master.py
+- README-MY-IPTV.txt
+- BUILD-MY-IPTV.bat (pilihan; untuk Windows sahaja)
+- folder .github/workflows/build-playlist.yml
+
+Penting: pastikan folder .github dan subfolder workflows dikekalkan tepat.
+
+LANGKAH C — JALANKAN BUILDER DI GITHUB
+1. Buka tab Actions dalam repository.
+2. Pilih "Build and publish IPTV playlist".
+3. Tekan Run workflow.
+4. Tunggu sehingga semua langkah bertanda hijau.
+5. Kembali ke Code dan pastikan fail berikut muncul:
+   - MY-IPTV-MASTER.m3u
+   - BUILD-REPORT.txt
+
+Jika workflow gagal, buka run yang gagal dan semak log. Jangan anggap URL siap
+selagi fail M3U belum muncul dalam repository.
+
+LANGKAH D — URL UNTUK OTT NAVIGATOR
+Selepas fail MY-IPTV-MASTER.m3u muncul, format URL Raw ialah:
+
+https://raw.githubusercontent.com/USERNAME/my-iptv-master/main/MY-IPTV-MASTER.m3u
+
+Gantikan USERNAME dengan nama akaun GitHub sebenar.
+URL ini hanya sah selepas repository, branch main dan fail tersebut wujud.
+
+LANGKAH E — MASUKKAN KE OTT NAVIGATOR
+1. Buka OTT Navigator.
+2. Pergi ke Settings > Provider / Playlist (nama menu boleh berbeza mengikut versi).
+3. Pilih Add provider / Add playlist.
+4. Pilih M3U URL.
+5. Tampal URL Raw GitHub.
+6. Simpan dan refresh/update playlist.
+
+JADUAL KEMAS KINI
+Workflow ditetapkan berjalan sekali sehari (02:17 UTC). Anda juga boleh
+menjalankannya secara manual melalui Actions > Run workflow.
+
+SEMAKAN SEBELUM DIGUNAKAN
+- Pastikan fail M3U bukan kosong.
+- Buka URL Raw dalam browser dan pastikan kandungan bermula dengan #EXTM3U.
+- Uji beberapa saluran daripada setiap kategori.
+- Semak BUILD-REPORT.txt untuk jumlah saluran dan sumber yang gagal.
+
+HAD & KETELUSAN
+- Ini menerbitkan playlist awam daripada sumber yang digunakan oleh builder.
+- GitHub tidak menjadi pelayan video; ia hanya mengehos fail senarai saluran.
+- Kualiti, kebolehcapaian dan hak siaran ditentukan oleh setiap penyedia sumber.
+- EPL, badminton premium dan saluran berbayar tidak dijamin tersedia.
+- Playlist ini tidak memintas DRM, login, langganan atau sekatan geografi.
+- Logo dan EPG hanya berfungsi jika metadata dan sumber sepadan tersedia.
+- URL Raw ialah URL awam. Jangan masukkan token akses atau maklumat pelanggan.
