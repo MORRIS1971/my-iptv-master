@@ -1,29 +1,34 @@
-MY IPTV MASTER — BUILD REPORT v3.1 HYBRID
+MY IPTV MASTER — BUILD REPORT v3.2 HYBRID
 
 RINGKASAN KATEGORI M3U:
-01 TV MALAYSIA: 6 saluran
+01 TV MALAYSIA: 4 saluran
 02 LEARNING CHANNELS: 210 saluran
 03 DISCOVERY CHANNELS: 272 saluran
-04 LIVE CHANNELS: 1158 saluran
-05 SPORTS: 538 saluran
-06 MOVIES: 824 saluran
+04 NEWS: 1158 saluran
+05 LIVE & GENERAL: 1949 saluran
+06 SPORTS: 538 saluran
+07 MOVIES: 824 saluran
 
-Jumlah saluran M3U: 3008
-Entri pendua ditolak: 36
+Jumlah saluran M3U: 4955
+Entri pendua ditolak: 76
+URL tidak sah/ditolak: 0
+Entri bukan Malaysia ditolak daripada kategori TV Malaysia: 2
 
-SENARAI TV MALAYSIA DALAM M3U:
+SENARAI TV MALAYSIA YANG DISAHKAN:
 - Berita RTM (1080p)
-#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=BeritaRTM.my@SD
-- BTL TV (Netherlands) (1080p) | tvg-id=BTLTV.nl@SD
-- FTV (Taiwan) (720p) [Not 24/7] | tvg-id=FTV.tw@SD
+#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=BeritaRTM.my@SD | tvg-country=tiada
 - Okey (1080p)
-#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=Okey.my@SD
-- TV1 (Malaysia) (1080p) | tvg-id=TV1.my@SD
+#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=Okey.my@SD | tvg-country=tiada
+- TV1 (Malaysia) (1080p) | tvg-id=TV1.my@SD | tvg-country=tiada
 - TV2 (Malaysia) (1080p)
-#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=TV2.my@SD
+#EXTVLCOPT:http-referrer=https://rtm-player.glueapi.io/ | tvg-id=TV2.my@SD | tvg-country=tiada
+
+ENTRI DITOLAK DARIPADA KATEGORI TV MALAYSIA:
+- BTL TV (Netherlands) (1080p) | tvg-id=BTLTV.nl@SD | tvg-country=tiada
+- FTV (Taiwan) (720p) [Not 24/7] | tvg-id=FTV.tw@SD | tvg-country=tiada
 
 SUMBER DAN JUMLAH:
-IPTV-ORG Malaysia: 6
+IPTV-ORG Malaysia (verified): 4
 IPTV-ORG Education: 208
 IPTV-ORG Documentary: 246
 IPTV-ORG Science: 16
@@ -35,6 +40,7 @@ Free-TV Sports: 31
 Free-TV Movies: 51
 Free-TV Learning: 2
 Free-TV Discovery: 10
+Free-TV General/Unclassified: 1949
 
 PLATFORM RASMI MALAYSIA (PAUTAN WEB/APLIKASI, BUKAN M3U):
 - RTMKlik: https://rtmklik.rtm.gov.my/
@@ -52,10 +58,11 @@ SUMBER M3U:
 - free_tv: https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8
 
 NOTA:
-- V3.1 ialah sistem Hybrid: satu playlist M3U ditambah panduan platform rasmi Malaysia.
-- Pautan RTMKlik, Tonton dan Awesome TV bukan stream M3U dan tidak dipaparkan sebagai saluran boleh main dalam OTT Navigator.
-- Stream M3U bersumberkan playlist awam; kebolehcapaian dari Malaysia belum dijamin.
-- Tiada ujian playback, DRM, login atau geo-block dibuat.
-- Saluran sukan tidak menjamin akses EPL atau badminton premium.
-- Metadata tvg-id/tvg-logo dikekalkan jika tersedia.
+- V3.2 mengasingkan NEWS daripada LIVE & GENERAL.
+- TV Malaysia ditapis menggunakan tvg-country (MY/MYS/Malaysia) atau tvg-id berakhiran .my.
+- Rekod yang tidak mempunyai bukti negara Malaysia tidak dimasukkan ke kategori TV Malaysia.
+- Free-TV yang tidak sepadan dengan kategori khusus diletakkan dalam LIVE & GENERAL.
+- Pendua tanpa tvg-id hanya ditolak jika nama dan URL stream sama.
+- Stream awam tidak semestinya boleh dimainkan dari Malaysia; playback belum diuji.
+- Tiada URL dalaman aplikasi, DRM atau sekatan lokasi yang dipintas.
 - EPG XMLTV belum disepadukan.
