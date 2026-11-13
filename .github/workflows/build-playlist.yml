@@ -1,0 +1,34 @@
+
+name: Build and publish IPTV playlist
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Build master playlist
+        run: python build_my_iptv_master.py
+
+      - name: Publish generated playlist
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add MY-IPTV-MASTER.m3u BUILD-REPORT.txt
+          git diff --cached --quiet || git commit -m "Update IPTV master playlist"
+          git push
