@@ -1,4 +1,4 @@
-# MY IPTV MASTER V3.2 — Platform Penstriman Rasmi Malaysia
+# MY IPTV MASTER V3.3 — Platform Penstriman Rasmi Malaysia
 
 Playlist M3U utama mengandungi stream awam/yang dibenarkan sahaja.
 Pautan dalam panduan ini membuka laman atau aplikasi rasmi; ia BUKAN stream M3U.
@@ -34,6 +34,6 @@ Pautan dalam panduan ini membuka laman atau aplikasi rasmi; ia BUKAN stream M3U.
 - OTT Navigator membaca stream M3U; ia tidak menukar pautan laman web atau aplikasi menjadi stream.
 - Ketersediaan kandungan, akaun, langganan dan sekatan lokasi ditentukan oleh penyiar.
 - Tiada URL dalaman aplikasi, DRM atau sekatan lokasi yang dipintas.
-- Kategori LIVE & GENERAL menempatkan entri Free-TV yang tidak dikenal pasti dalam kategori khusus.
+- OTHER / UNCLASSIFIED mengandungi entri Free-TV yang tidak sepadan dengan peraturan kategori khusus; ia bukan pengesahan jenis kandungan atau status siaran langsung.
 - Ketersediaan dan playback setiap stream perlu diuji dalam aplikasi.
 - EPG XMLTV belum disepadukan.
