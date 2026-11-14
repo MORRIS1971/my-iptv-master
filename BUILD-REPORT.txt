@@ -6,8 +6,8 @@ RINGKASAN KATEGORI M3U:
 03 DISCOVERY CHANNELS: 272 saluran
 04 NEWS: 1158 saluran
 05 OTHER / UNCLASSIFIED: 1949 saluran
-06 SPORTS: 538 saluran
-07 MOVIES: 824 saluran
+06 SPORTS: 541 saluran
+07 MOVIES: 821 saluran
 
 Jumlah saluran M3U: 4955
 Entri pendua ditolak: 76
@@ -35,8 +35,8 @@ IPTV-ORG Education: 208
 IPTV-ORG Documentary: 246
 IPTV-ORG Science: 16
 IPTV-ORG News: 1058
-IPTV-ORG Sports: 507
-IPTV-ORG Movies: 773
+IPTV-ORG Sports: 510
+IPTV-ORG Movies: 770
 Free-TV News: 100
 Free-TV Sports: 31
 Free-TV Movies: 51
