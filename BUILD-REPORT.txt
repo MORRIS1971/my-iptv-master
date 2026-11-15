@@ -3,13 +3,13 @@ MY IPTV MASTER — BUILD REPORT v3.3 HYBRID
 RINGKASAN KATEGORI M3U:
 01 TV MALAYSIA: 4 saluran
 02 LEARNING CHANNELS: 210 saluran
-03 DISCOVERY CHANNELS: 272 saluran
-04 NEWS: 1158 saluran
+03 DISCOVERY CHANNELS: 271 saluran
+04 NEWS: 1155 saluran
 05 OTHER / UNCLASSIFIED: 1949 saluran
-06 SPORTS: 541 saluran
-07 MOVIES: 821 saluran
+06 SPORTS: 553 saluran
+07 MOVIES: 823 saluran
 
-Jumlah saluran M3U: 4955
+Jumlah saluran M3U: 4965
 Entri pendua ditolak: 76
 URL tidak sah/ditolak: 0
 Entri bukan Malaysia ditolak daripada kategori TV Malaysia: 2
@@ -32,11 +32,11 @@ ENTRI DITOLAK DARIPADA KATEGORI TV MALAYSIA:
 SUMBER DAN JUMLAH:
 IPTV-ORG Malaysia (verified): 4
 IPTV-ORG Education: 208
-IPTV-ORG Documentary: 246
+IPTV-ORG Documentary: 245
 IPTV-ORG Science: 16
-IPTV-ORG News: 1058
-IPTV-ORG Sports: 510
-IPTV-ORG Movies: 770
+IPTV-ORG News: 1055
+IPTV-ORG Sports: 522
+IPTV-ORG Movies: 772
 Free-TV News: 100
 Free-TV Sports: 31
 Free-TV Movies: 51
