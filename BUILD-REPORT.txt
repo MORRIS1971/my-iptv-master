@@ -4,12 +4,12 @@ RINGKASAN KATEGORI M3U:
 01 TV MALAYSIA: 4 saluran
 02 LEARNING CHANNELS: 212 saluran
 03 DISCOVERY CHANNELS: 274 saluran
-04 NEWS: 1156 saluran
+04 NEWS: 1158 saluran
 05 OTHER / UNCLASSIFIED: 1949 saluran
-06 SPORTS: 562 saluran
-07 MOVIES: 826 saluran
+06 SPORTS: 568 saluran
+07 MOVIES: 828 saluran
 
-Jumlah saluran M3U: 4983
+Jumlah saluran M3U: 4993
 Entri pendua ditolak: 76
 URL tidak sah/ditolak: 0
 Entri bukan Malaysia ditolak daripada kategori TV Malaysia: 2
@@ -34,9 +34,9 @@ IPTV-ORG Malaysia (verified): 4
 IPTV-ORG Education: 210
 IPTV-ORG Documentary: 247
 IPTV-ORG Science: 17
-IPTV-ORG News: 1056
-IPTV-ORG Sports: 531
-IPTV-ORG Movies: 775
+IPTV-ORG News: 1058
+IPTV-ORG Sports: 537
+IPTV-ORG Movies: 777
 Free-TV News: 100
 Free-TV Sports: 31
 Free-TV Movies: 51
