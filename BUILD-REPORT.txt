@@ -3,18 +3,18 @@ MY IPTV MASTER — BUILD REPORT v3.3 HYBRID
 RINGKASAN KATEGORI M3U:
 01 TV MALAYSIA: 4 saluran
 02 LEARNING CHANNELS: 211 saluran
-03 DISCOVERY CHANNELS: 276 saluran
-04 NEWS: 1160 saluran
-05 OTHER / UNCLASSIFIED: 1949 saluran
-06 SPORTS: 557 saluran
+03 DISCOVERY CHANNELS: 278 saluran
+04 NEWS: 1161 saluran
+05 OTHER / UNCLASSIFIED: 1937 saluran
+06 SPORTS: 561 saluran
 07 MOVIES: 831 saluran
 
-Jumlah saluran M3U: 4988
+Jumlah saluran M3U: 4983
 Entri pendua ditolak: 76
 URL tidak sah/ditolak: 0
 Entri bukan Malaysia ditolak daripada kategori TV Malaysia: 2
-Entri Free-TV tidak dapat diklasifikasikan (sebelum deduplikasi): 1989
-Entri OTHER / UNCLASSIFIED berjaya ditambah: 1949
+Entri Free-TV tidak dapat diklasifikasikan (sebelum deduplikasi): 1977
+Entri OTHER / UNCLASSIFIED berjaya ditambah: 1937
 
 SENARAI TV MALAYSIA YANG DISAHKAN:
 - Berita RTM (1080p)
@@ -32,17 +32,17 @@ ENTRI DITOLAK DARIPADA KATEGORI TV MALAYSIA:
 SUMBER DAN JUMLAH:
 IPTV-ORG Malaysia (verified): 4
 IPTV-ORG Education: 209
-IPTV-ORG Documentary: 249
+IPTV-ORG Documentary: 251
 IPTV-ORG Science: 17
-IPTV-ORG News: 1060
-IPTV-ORG Sports: 526
+IPTV-ORG News: 1061
+IPTV-ORG Sports: 530
 IPTV-ORG Movies: 780
 Free-TV News: 100
 Free-TV Sports: 31
 Free-TV Movies: 51
 Free-TV Learning: 2
 Free-TV Discovery: 10
-Free-TV Other/Unclassified: 1949
+Free-TV Other/Unclassified: 1937
 
 PLATFORM RASMI MALAYSIA (PAUTAN WEB/APLIKASI, BUKAN M3U):
 - RTMKlik: https://rtmklik.rtm.gov.my/
